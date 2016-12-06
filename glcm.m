@@ -6,19 +6,23 @@ workspace;  % Make sure the workspace panel is showing.
 dirbtine = imread('/teksturos/dirbtine.png');
 sky = imread('teksturos/clear_sky.png');
 grass = imread('teksturos/grass.jpg');
-white = imread('teksturos/white.jpg');
-dark = imread('teksturos/dark.jpg');
-low = imread('teksturos/low.jpg');
-figure;imshow(dirbtine);
-figure;imshow(sky);
-figure;imshow(grass);
+% figure;imshow(dirbtine);
+% figure;imshow(sky);
+% figure;imshow(grass);
 
-stats_dirbtine = struct2array(graycoprops(rgb2gray(dirbtine)));
-stats_sky = struct2array(graycoprops(rgb2gray(sky)));
-stats_grass = struct2array(graycoprops(rgb2gray(grass)));
-stats_white = struct2array(graycoprops(rgb2gray(white)));
-stats_dark = struct2array(graycoprops(rgb2gray(dark)));
-stats_low = struct2array(graycoprops(rgb2gray(low)));
+% offsets explained https://se.mathworks.com/help/images/specify-offset-used-in-glcm-calculation.html
+% possible offset [0 1; -1 1; -1 0; -1 -1]
+OFFSET = [0 1; 0 2; 0 3; 0 4;...
+           -1 1; -2 2; -3 3; -4 4;...
+           -1 0; -2 0; -3 0; -4 0;...
+           -1 -1; -2 -2; -3 -3; -4 -4];
+GLCM_dirbtine = graycomatrix(rgb2gray(dirbtine),'Offset', OFFSET);
+GLCM_sky = graycomatrix(rgb2gray(sky),'Offset', OFFSET);
+GCLM_grass = graycomatrix(rgb2gray(grass),'Offset', OFFSET);
+
+stats_dirbtine = struct2array(graycoprops(GLCM_dirbtine));
+stats_sky = struct2array(graycoprops(GLCM_sky));
+stats_grass = struct2array(graycoprops(GCLM_grass));
 
 % Contrast is the difference in luminance or colour that makes an object 
 %(or its representation in an image or display) distinguishable. 
@@ -27,18 +31,11 @@ stats_low = struct2array(graycoprops(rgb2gray(low)));
 fprintf('kontrastas dirbtines: %3.2f \n', stats_dirbtine(1));
 fprintf('kontrastas sky: %3.2f \n', stats_sky(1));
 fprintf('kontrastas grass: %3.2f \n', stats_grass(1));
-fprintf('kontrastas white: %3.2f \n', stats_white(1));
-fprintf('kontrastas dark: %3.2f \n', stats_dark(1));
-fprintf('kontrastas low: %3.2f \n', stats_low(1));
 
-entropy_dirbtine = custom_entropy(dirbtine);
-stats_sky = custom_entropy(sky);
-stats_grass = custom_entropy(grass);
+entropy_dirbtine = custom_entropy(GLCM_dirbtine);
+entropy_sky = custom_entropy(GLCM_sky);
+entropy_grass = custom_entropy(GCLM_grass);
 
-fprintf('entropija dirbtines: %3.2f %3.2f %3.2f \n', entropy_dirbtine(1), entropy_dirbtine(2), entropy_dirbtine(3));
-fprintf('entropija sky: %3.2f %3.2f %3.2f \n', stats_sky(1), stats_sky(2), stats_sky(3));
-fprintf('entropija grass: %3.2f %3.2f %3.2f \n', stats_grass(1), stats_grass(2), stats_grass(3));
-
-Edirbtine = entropy(rgb2gray(dirbtine));
-Esky = entropy(rgb2gray(sky));
-Egrass = entropy(rgb2gray(grass));
+fprintf('entropija dirbtines: %3.2f \n', entropy_dirbtine);
+fprintf('entropija sky: %3.2f \n', entropy_sky);
+fprintf('entropija grass: %3.2f \n', entropy_grass);
